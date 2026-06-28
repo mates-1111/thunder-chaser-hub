@@ -2,6 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 
 const ALLOWED_KINDS = new Set(["radary", "blesky"]);
 const REF_RE = /^\d{12}$/;
+const EMPTY_PNG_BASE64 =
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/lw2n7wAAAABJRU5ErkJggg==";
+
+function pngResponse(base64: string, maxAge = 300) {
+  const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
+  return new Response(bytes, {
+    headers: {
+      "content-type": "image/png",
+      "cache-control": `public, max-age=${maxAge}, stale-while-revalidate=${maxAge * 2}`,
+    },
+  });
+}
 
 export const Route = createFileRoute("/api/chmi/layer")({
   server: {
@@ -20,6 +32,10 @@ export const Route = createFileRoute("/api/chmi/layer")({
           { headers: { accept: "application/json" } },
         );
 
+        if (!response.ok && kind === "blesky") {
+          return pngResponse(EMPTY_PNG_BASE64, 60);
+        }
+
         if (!response.ok) {
           return Response.json({ message: "Radar layer is unavailable" }, { status: 502 });
         }
@@ -30,13 +46,7 @@ export const Route = createFileRoute("/api/chmi/layer")({
           return Response.json({ message: "Radar layer image is missing" }, { status: 502 });
         }
 
-        const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
-        return new Response(bytes, {
-          headers: {
-            "content-type": "image/png",
-            "cache-control": "public, max-age=300, stale-while-revalidate=600",
-          },
-        });
+        return pngResponse(base64);
       },
     },
   },
