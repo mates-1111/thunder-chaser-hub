@@ -85,7 +85,7 @@ export function RadarTimeline({
   const ratio = currentIndex / Math.max(1, frames.length - 1);
 
   return (
-    <div className="pointer-events-auto absolute bottom-20 left-1/2 z-[1000] w-[min(720px,calc(100vw-24px))] -translate-x-1/2 select-none rounded-xl bg-panel/95 px-4 py-3 text-panel-foreground shadow-2xl backdrop-blur">
+    <div className="pointer-events-auto absolute bottom-3 left-1/2 z-[1000] w-[min(720px,calc(100vw-24px))] -translate-x-1/2 select-none rounded-xl bg-panel/95 px-4 py-3 text-panel-foreground shadow-2xl backdrop-blur">
       <div className="flex items-center gap-3">
         <button
           onClick={() => setPlaying((p) => !p)}
