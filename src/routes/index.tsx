@@ -70,11 +70,14 @@ function HomePage() {
       {/* Počasí u vás – vlevo nahoře pod hlavičkou */}
       <button
         type="button"
+        onClick={() => setWeatherOpen(true)}
         className="pointer-events-auto absolute top-16 left-3 z-[1000] inline-flex items-center gap-2 rounded-full bg-bolt px-4 py-1.5 text-xs font-semibold text-bolt-foreground shadow-2xl transition hover:brightness-95"
       >
         <MapPin className="h-3.5 w-3.5" />
         Počasí u vás
       </button>
+
+      <LocalWeatherDialog open={weatherOpen} onOpenChange={setWeatherOpen} />
 
       {radar && (
         <RadarTimeline
