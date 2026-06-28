@@ -72,6 +72,15 @@ function HomePage() {
           onIndexChange={setIdx}
         />
       )}
+
+      {/* Počasí u vás – kompaktní akce dole pod radarem */}
+      <button
+        type="button"
+        className="pointer-events-auto absolute bottom-3 left-1/2 z-[1000] inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-bolt px-4 py-1.5 text-xs font-semibold text-bolt-foreground shadow-2xl transition hover:brightness-95"
+      >
+        <MapPin className="h-3.5 w-3.5" />
+        Počasí u vás
+      </button>
     </main>
   );
 }
