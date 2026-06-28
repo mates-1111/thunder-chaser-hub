@@ -31,6 +31,7 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const [radar, setRadar] = useState<RadarData | null>(null);
   const [idx, setIdx] = useState(0);
+  const [weatherOpen, setWeatherOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
