@@ -14,7 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          city: string | null
+          created_at: string
+          description: string
+          expires_at: string | null
+          id: string
+          lat: number | null
+          level: number
+          lng: number | null
+          radius_km: number | null
+          type: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          description: string
+          expires_at?: string | null
+          id?: string
+          lat?: number | null
+          level: number
+          lng?: number | null
+          radius_km?: number | null
+          type: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          description?: string
+          expires_at?: string | null
+          id?: string
+          lat?: number | null
+          level?: number
+          lng?: number | null
+          radius_km?: number | null
+          type?: string
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          city: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
