@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "bouřka radar" },
+      { name: "description", content: "bouřkový radar s upozorněním o blížících se bouřkách. stačí zapnout push zadat polohu a aplikace vás před bouřkou upozorní." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "bouřka radar" },
+      { property: "og:description", content: "bouřkový radar s upozorněním o blížících se bouřkách. stačí zapnout push zadat polohu a aplikace vás před bouřkou upozorní." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "bouřka radar" },
+      { name: "twitter:description", content: "bouřkový radar s upozorněním o blížících se bouřkách. stačí zapnout push zadat polohu a aplikace vás před bouřkou upozorní." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/012fa587-d378-4769-a378-5122aa072c09/id-preview-4de7d202--f76a542d-a0dc-47c7-88b8-40699a2ad3f0.lovable.app-1782641686620.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/012fa587-d378-4769-a378-5122aa072c09/id-preview-4de7d202--f76a542d-a0dc-47c7-88b8-40699a2ad3f0.lovable.app-1782641686620.png" },
     ],
     links: [
       {
