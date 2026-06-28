@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 const ALLOWED_KINDS = new Set(["radary", "blesky"]);
 const REF_RE = /^\d{12}$/;
 const EMPTY_PNG_BASE64 =
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/lw2n7wAAAABJRU5ErkJggg==";
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABpfZFQAAAAABJRU5ErkJggg==";
 
 function pngResponse(base64: string, maxAge = 300) {
   const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
