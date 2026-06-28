@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { MapPin } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { StormMap } from "@/components/StormMap";
