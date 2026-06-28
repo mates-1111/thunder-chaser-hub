@@ -27,10 +27,11 @@ export async function fetchRadar(): Promise<RadarData> {
   };
 }
 
-// Color scheme 5 = Meteored (modrá → zelená → žlutá → oranžová → červená → tmavě červená → bílá).
+// Color scheme 2 = Original (klasická radarová paleta jako CHMI/INCA:
+// modrá → azurová → zelená → žlutá → oranžová → červená → magenta → bílá).
 // Smooth = 1, snow = 1 pro pěknější vykreslení.
 export function tileUrl(host: string, frame: RadarFrame, size = 256): string {
-  return `${host}${frame.path}/${size}/{z}/{x}/{y}/5/1_1.png`;
+  return `${host}${frame.path}/${size}/{z}/{x}/{y}/2/1_1.png`;
 }
 
 export function formatTime(unix: number): string {
