@@ -146,7 +146,8 @@
 }
 .chmi-radar-overlay,
 .chmi-lightning-overlay {
-  image-rendering: auto;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
   pointer-events: none;
   user-select: none;
 }
