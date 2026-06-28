@@ -33,6 +33,7 @@ function HomePage() {
   const [radar, setRadar] = useState<RadarData | null>(null);
   const [idx, setIdx] = useState(0);
   const [weatherOpen, setWeatherOpen] = useState(false);
+  const [pushOpen, setPushOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
