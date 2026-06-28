@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type L from "leaflet";
 import { layerImageUrl, type RadarFrame } from "@/lib/radar";
 
@@ -20,6 +20,7 @@ export function StormMap({ currentFrame, bounds }: StormMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const radarLayerRef = useRef<L.ImageOverlay | null>(null);
   const lightningLayerRef = useRef<L.ImageOverlay | null>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   const LRef = useRef<typeof import("leaflet") | null>(null);
 
@@ -53,12 +54,14 @@ export function StormMap({ currentFrame, bounds }: StormMapProps) {
         },
       ).addTo(map);
       mapRef.current = map;
+      setMapReady(true);
     });
 
     return () => {
       cancelled = true;
       mapRef.current?.remove();
       mapRef.current = null;
+      setMapReady(false);
     };
   }, []);
 
@@ -66,7 +69,7 @@ export function StormMap({ currentFrame, bounds }: StormMapProps) {
   useEffect(() => {
     const map = mapRef.current;
     const Lmod = LRef.current;
-    if (!map || !Lmod || !bounds || !currentFrame) return;
+    if (!mapReady || !map || !Lmod || !bounds || !currentFrame) return;
 
     const radarLayer = Lmod.imageOverlay(layerImageUrl("radary", currentFrame), bounds, {
       opacity: 0.86,
@@ -98,7 +101,7 @@ export function StormMap({ currentFrame, bounds }: StormMapProps) {
     lightningLayerRef.current = lightningLayer;
 
     return () => clearTimeout(t);
-  }, [bounds, currentFrame]);
+  }, [bounds, currentFrame, mapReady]);
 
   return <div ref={containerRef} className="absolute inset-0 z-0" />;
 }
