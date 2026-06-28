@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { StormMap } from "@/components/StormMap";
 import { RadarTimeline } from "@/components/RadarTimeline";
+import { LocalWeatherDialog } from "@/components/LocalWeatherDialog";
 import { fetchRadar, type RadarData } from "@/lib/radar";
 
 
