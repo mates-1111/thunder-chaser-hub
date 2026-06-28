@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { MapPin } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { StormMap } from "@/components/StormMap";
 import { RadarTimeline } from "@/components/RadarTimeline";
 import { fetchRadar, type RadarData } from "@/lib/radar";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -72,15 +72,6 @@ function HomePage() {
           onIndexChange={setIdx}
         />
       )}
-
-      {/* CTA: Nahlásit počasí */}
-      <button
-        type="button"
-        className="pointer-events-auto absolute bottom-4 left-1/2 z-[1000] inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-bolt px-5 py-2.5 text-sm font-semibold text-bolt-foreground shadow-2xl transition hover:brightness-95"
-      >
-        <MapPin className="h-4 w-4" />
-        Nahlásit počasí u mě
-      </button>
     </main>
   );
 }
