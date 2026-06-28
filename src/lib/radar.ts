@@ -43,7 +43,7 @@ function refToUnix(ref: string): number {
   const day = Number(ref.slice(6, 8));
   const hour = Number(ref.slice(8, 10));
   const minute = Number(ref.slice(10, 12));
-  return Math.floor(Date.UTC(year, month, day, hour, minute) / 1000);
+  return Math.floor(new Date(year, month, day, hour, minute).getTime() / 1000);
 }
 
 export async function fetchRadar(): Promise<RadarData> {
