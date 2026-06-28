@@ -1,20 +1,26 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type L from "leaflet";
-import { type RadarFrame, tileUrl } from "@/lib/radar";
+import { layerImageUrl, type RadarFrame } from "@/lib/radar";
 
 interface StormMapProps {
-  host: string | null;
   currentFrame: RadarFrame | null;
+  bounds: [[number, number], [number, number]] | null;
 }
 
 // Centrum Česka
 const CZ_CENTER: [number, number] = [49.8, 15.5];
 const CZ_ZOOM = 7;
+const CZ_MAX_BOUNDS: [[number, number], [number, number]] = [
+  [47.1, 9.5],
+  [52.7, 21.5],
+];
 
-export function StormMap({ host, currentFrame }: StormMapProps) {
+export function StormMap({ currentFrame, bounds }: StormMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
-  const radarLayerRef = useRef<L.TileLayer | null>(null);
+  const radarLayerRef = useRef<L.ImageOverlay | null>(null);
+  const lightningLayerRef = useRef<L.ImageOverlay | null>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   const LRef = useRef<typeof import("leaflet") | null>(null);
 
@@ -29,55 +35,73 @@ export function StormMap({ host, currentFrame }: StormMapProps) {
       const map = Lmod.map(containerRef.current, {
         center: CZ_CENTER,
         zoom: CZ_ZOOM,
+        minZoom: 6,
+        maxZoom: 15,
+        zoomSnap: 0.25,
+        wheelPxPerZoomLevel: 90,
+        maxBounds: CZ_MAX_BOUNDS,
+        maxBoundsViscosity: 0.55,
         zoomControl: true,
         attributionControl: true,
         preferCanvas: true,
       });
       Lmod.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
           attribution:
-            '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://openstreetmap.org/">OpenStreetMap</a>',
-          subdomains: "abcd",
+            '&copy; <a href="https://openstreetmap.org/">OpenStreetMap</a> contributors',
           maxZoom: 19,
         },
       ).addTo(map);
       mapRef.current = map;
+      setMapReady(true);
     });
 
     return () => {
       cancelled = true;
       mapRef.current?.remove();
       mapRef.current = null;
+      setMapReady(false);
     };
   }, []);
 
-  // update radar layer when frame changes
+  // update official ČHMÚ radar + lightning image overlays when frame changes
   useEffect(() => {
     const map = mapRef.current;
     const Lmod = LRef.current;
-    if (!map || !Lmod || !host || !currentFrame) return;
+    if (!mapReady || !map || !Lmod || !bounds || !currentFrame) return;
 
-    const url = tileUrl(host, currentFrame);
-    const newLayer = Lmod.tileLayer(url, {
-      opacity: 0.7,
+    const radarLayer = Lmod.imageOverlay(layerImageUrl("radary", currentFrame), bounds, {
+      opacity: 0.86,
       zIndex: 400,
-      tileSize: 256,
+      interactive: false,
+      className: "chmi-radar-overlay",
     });
-    newLayer.addTo(map);
+    const lightningLayer = Lmod.imageOverlay(layerImageUrl("blesky", currentFrame), bounds, {
+      opacity: 0.92,
+      zIndex: 410,
+      interactive: false,
+      className: "chmi-lightning-overlay",
+    });
+    radarLayer.addTo(map);
+    lightningLayer.addTo(map);
 
-    const old = radarLayerRef.current;
-    newLayer.once("load", () => {
-      if (old) old.remove();
+    const oldRadar = radarLayerRef.current;
+    const oldLightning = lightningLayerRef.current;
+    radarLayer.once("load", () => {
+      if (oldRadar) oldRadar.remove();
+      if (oldLightning) oldLightning.remove();
     });
     const t = setTimeout(() => {
-      if (old && old !== newLayer) old.remove();
+      if (oldRadar && oldRadar !== radarLayer) oldRadar.remove();
+      if (oldLightning && oldLightning !== lightningLayer) oldLightning.remove();
     }, 800);
 
-    radarLayerRef.current = newLayer;
+    radarLayerRef.current = radarLayer;
+    lightningLayerRef.current = lightningLayer;
 
     return () => clearTimeout(t);
-  }, [host, currentFrame]);
+  }, [bounds, currentFrame, mapReady]);
 
   return <div ref={containerRef} className="absolute inset-0 z-0" />;
 }

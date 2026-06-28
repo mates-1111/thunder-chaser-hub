@@ -115,7 +115,7 @@ export function RadarTimeline({
           ) : currentIndex === nowIdx ? (
             <span>· nyní</span>
           ) : (
-            <span>· {(nowIdx - currentIndex) * 10} min zpět</span>
+            <span>· {(nowIdx - currentIndex) * 5} min zpět</span>
           )}
         </div>
       </div>
@@ -156,7 +156,7 @@ export function RadarTimeline({
             const active = i === currentIndex;
             return (
               <div
-                key={f.time}
+                key={f.ref}
                 className={cn(
                   "flex-1 rounded-[2px] transition-all",
                   active ? "h-7 opacity-100" : "h-5 opacity-60",
@@ -184,12 +184,12 @@ export function RadarTimeline({
       </div>
 
       <div className="mt-1.5 flex justify-between text-[10px] text-muted-foreground">
-        <span>−{past.length * 10} min</span>
+        <span>−{Math.max(0, past.length - 1) * 5} min</span>
         <span className="font-semibold text-bolt">nyní</span>
         <span>+{nowcast.length * 10} min</span>
       </div>
       <div className="mt-1 text-[10px] text-muted-foreground">
-        Radar RainViewer · podrž a táhni rukojeť, nebo šipky ←/→
+        Radar ČHMÚ + blesky · podrž a táhni rukojeť, nebo šipky ←/→
       </div>
     </div>
   );
