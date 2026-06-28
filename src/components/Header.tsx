@@ -11,7 +11,7 @@ export function Header() {
         <span className="leading-tight">
           <span className="block text-base font-bold">Bouřkář CZ</span>
           <span className="block text-[11px] text-muted-foreground">
-            Radar · hlášení · předpovědi pro Česko
+            Radar ČHMÚ · blesky · předpovědi pro Česko
           </span>
         </span>
       </Link>

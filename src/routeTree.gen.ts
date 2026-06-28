@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiChmiRadarConfigRouteImport } from './routes/api/chmi/radar-config'
+import { Route as ApiChmiLayerRouteImport } from './routes/api/chmi/layer'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -22,31 +24,49 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChmiRadarConfigRoute = ApiChmiRadarConfigRouteImport.update({
+  id: '/api/chmi/radar-config',
+  path: '/api/chmi/radar-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChmiLayerRoute = ApiChmiLayerRouteImport.update({
+  id: '/api/chmi/layer',
+  path: '/api/chmi/layer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/chmi/layer': typeof ApiChmiLayerRoute
+  '/api/chmi/radar-config': typeof ApiChmiRadarConfigRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/chmi/layer': typeof ApiChmiLayerRoute
+  '/api/chmi/radar-config': typeof ApiChmiRadarConfigRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/chmi/layer': typeof ApiChmiLayerRoute
+  '/api/chmi/radar-config': typeof ApiChmiRadarConfigRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin'
+  fullPaths: '/' | '/admin' | '/api/chmi/layer' | '/api/chmi/radar-config'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin'
-  id: '__root__' | '/' | '/admin'
+  to: '/' | '/admin' | '/api/chmi/layer' | '/api/chmi/radar-config'
+  id: '__root__' | '/' | '/admin' | '/api/chmi/layer' | '/api/chmi/radar-config'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  ApiChmiLayerRoute: typeof ApiChmiLayerRoute
+  ApiChmiRadarConfigRoute: typeof ApiChmiRadarConfigRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +85,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/chmi/radar-config': {
+      id: '/api/chmi/radar-config'
+      path: '/api/chmi/radar-config'
+      fullPath: '/api/chmi/radar-config'
+      preLoaderRoute: typeof ApiChmiRadarConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chmi/layer': {
+      id: '/api/chmi/layer'
+      path: '/api/chmi/layer'
+      fullPath: '/api/chmi/layer'
+      preLoaderRoute: typeof ApiChmiLayerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  ApiChmiLayerRoute: ApiChmiLayerRoute,
+  ApiChmiRadarConfigRoute: ApiChmiRadarConfigRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

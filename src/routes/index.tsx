@@ -59,7 +59,7 @@ function HomePage() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-background">
-      <StormMap host={radar?.host ?? null} currentFrame={currentFrame} />
+      <StormMap currentFrame={currentFrame} bounds={radar?.bounds ?? null} />
 
       <Header />
       <Sidebar />

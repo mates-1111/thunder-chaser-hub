@@ -113,14 +113,29 @@
 
 /* Leaflet overrides */
 .leaflet-container {
-  background: oklch(0.95 0.005 250);
+  background: oklch(0.96 0.004 240);
   font-family: var(--font-sans);
   outline: none;
+}
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+  forced-color-adjust: none;
 }
 .leaflet-control-zoom a {
   background-color: var(--color-header) !important;
   color: var(--color-header-foreground) !important;
   border-color: oklch(1 0 0 / 0.15) !important;
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
 }
 .leaflet-control-zoom a:hover {
   background-color: oklch(0.25 0.03 252) !important;
@@ -128,4 +143,13 @@
 .leaflet-control-attribution {
   background: oklch(1 0 0 / 0.85) !important;
   font-size: 10px !important;
+}
+.chmi-radar-overlay,
+.chmi-lightning-overlay {
+  image-rendering: auto;
+  pointer-events: none;
+  user-select: none;
+}
+.chmi-lightning-overlay {
+  filter: drop-shadow(0 0 1px oklch(1 0 0 / 0.9));
 }
