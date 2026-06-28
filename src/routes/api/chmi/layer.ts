@@ -32,18 +32,14 @@ export const Route = createFileRoute("/api/chmi/layer")({
           { headers: { accept: "application/json" } },
         );
 
-        if (!response.ok && kind === "blesky") {
+        if (!response.ok) {
           return pngResponse(EMPTY_PNG_BASE64, 60);
         }
 
-        if (!response.ok) {
-          return Response.json({ message: "Radar layer is unavailable" }, { status: 502 });
-        }
-
-        const payload = (await response.json()) as { img?: string };
+        const payload = (await response.json().catch(() => ({}))) as { img?: string };
         const base64 = payload.img?.replace(/^data:image\/png;base64,/, "");
         if (!base64) {
-          return Response.json({ message: "Radar layer image is missing" }, { status: 502 });
+          return pngResponse(EMPTY_PNG_BASE64, 60);
         }
 
         return pngResponse(base64);
