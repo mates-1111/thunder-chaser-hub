@@ -1,29 +1,86 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { MapPin } from "lucide-react";
+import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/Sidebar";
+import { StormMap } from "@/components/StormMap";
+import { RadarTimeline } from "@/components/RadarTimeline";
+import { fetchRadar, type RadarData } from "@/lib/radar";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Bouřkář CZ — radar bouřek, předpovědi a hlášení pro Česko" },
+      {
+        name: "description",
+        content:
+          "Živý radar bouřek a srážek nad Českem, krátkodobá a dlouhodobá varování a hlášení od lidí v okolí.",
+      },
+      { property: "og:title", content: "Bouřkář CZ" },
+      {
+        property: "og:description",
+        content: "Radar, hlášení a předpovědi bouřek pro Česko.",
+      },
     ],
   }),
-  component: Index,
+  component: HomePage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function HomePage() {
+  const [radar, setRadar] = useState<RadarData | null>(null);
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchRadar()
+      .then((d) => {
+        if (cancelled) return;
+        setRadar(d);
+        // start na "nyní" = poslední past frame
+        setIdx(Math.max(0, d.past.length - 1));
+      })
+      .catch((err) => console.error("Radar fetch failed", err));
+
+    // refresh dat každých 5 min
+    const id = setInterval(() => {
+      fetchRadar()
+        .then((d) => !cancelled && setRadar(d))
+        .catch(() => {});
+    }, 5 * 60 * 1000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+
+  const frames = radar ? [...radar.past, ...radar.nowcast] : [];
+  const currentFrame = frames[idx] ?? null;
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="relative h-screen w-screen overflow-hidden bg-background">
+      <StormMap host={radar?.host ?? null} currentFrame={currentFrame} />
+
+      <Header />
+      <Sidebar />
+
+      {radar && (
+        <RadarTimeline
+          past={radar.past}
+          nowcast={radar.nowcast}
+          currentIndex={idx}
+          onIndexChange={setIdx}
+        />
+      )}
+
+      {/* CTA: Nahlásit počasí */}
+      <button
+        type="button"
+        className="pointer-events-auto absolute bottom-4 left-1/2 z-[1000] inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-bolt px-5 py-2.5 text-sm font-semibold text-bolt-foreground shadow-2xl transition hover:brightness-95"
+      >
+        <MapPin className="h-4 w-4" />
+        Nahlásit počasí u mě
+      </button>
+    </main>
   );
 }
