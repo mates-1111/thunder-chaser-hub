@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getStoredCity } from "@/components/PushDialog";
 
 export type Alert = {
   id: string;
   type: "long" | "short";
   level: number;
+  name: string | null;
   description: string;
   city: string | null;
+  lat: number | null;
+  lng: number | null;
   radius_km: number | null;
+  starts_at: string;
   expires_at: string | null;
   created_at: string;
 };
@@ -23,7 +26,7 @@ export function useAlerts() {
         .from("alerts")
         .select("*")
         .order("created_at", { ascending: false });
-      if (!cancelled && data) setAlerts(data as Alert[]);
+      if (!cancelled && data) setAlerts(data as unknown as Alert[]);
     }
     load();
 
@@ -35,8 +38,11 @@ export function useAlerts() {
         (payload) => {
           if (payload.eventType === "INSERT") {
             const a = payload.new as Alert;
-            setAlerts((cur) => [a, ...cur]);
+            setAlerts((cur) => [a, ...cur.filter((x) => x.id !== a.id)]);
             maybeNotify(a);
+          } else if (payload.eventType === "UPDATE") {
+            const a = payload.new as Alert;
+            setAlerts((cur) => cur.map((x) => (x.id === a.id ? a : x)));
           } else if (payload.eventType === "DELETE") {
             const id = (payload.old as { id: string }).id;
             setAlerts((cur) => cur.filter((x) => x.id !== id));
@@ -51,25 +57,21 @@ export function useAlerts() {
     };
   }, []);
 
-  return alerts;
+  // Filter expired
+  const now = Date.now();
+  return alerts.filter((a) => !a.expires_at || new Date(a.expires_at).getTime() > now);
 }
 
 function maybeNotify(a: Alert) {
   if (typeof window === "undefined") return;
   if (!("Notification" in window) || Notification.permission !== "granted") return;
-  const city = getStoredCity();
-  if (!city) return;
-  // Long-range alerts apply to everyone subscribed; short-range only when city matches.
-  if (a.type === "short") {
-    if (!a.city || a.city.toLowerCase() !== city.toLowerCase()) return;
-  }
   const title =
     a.type === "short"
-      ? `⚡ Bouřka u tebe (úroveň ${a.level})`
+      ? `⚡ Bouřka v okolí (úroveň ${a.level})`
       : `⚠️ Výstraha (úroveň ${a.level})`;
   try {
     new Notification(title, {
-      body: a.description,
+      body: a.name ? `${a.name}\n${a.description}` : a.description,
       tag: a.id,
     });
   } catch (e) {

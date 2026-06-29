@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { BellOff, Shield, Zap } from "lucide-react";
+import { Shield, Zap, Facebook } from "lucide-react";
 
 export function Header() {
   return (
@@ -10,26 +10,29 @@ export function Header() {
         </span>
         <span className="leading-tight">
           <span className="block text-base font-bold">Bouřkář CZ</span>
-          <span className="block text-[11px] text-muted-foreground">
+          <span className="hidden text-[11px] text-muted-foreground sm:block">
             Radar ČHMÚ · blesky · předpovědi pro Česko
           </span>
         </span>
       </Link>
 
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          className="hidden items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1.5 text-xs font-medium hover:bg-accent sm:inline-flex"
+        <a
+          href="https://www.facebook.com/bourkyCZ"
+          target="_blank"
+          rel="noreferrer noopener"
+          className="inline-flex items-center gap-1.5 rounded-md bg-[#1877F2] px-3 py-1.5 text-xs font-semibold text-white shadow hover:brightness-110"
         >
-          <BellOff className="h-3.5 w-3.5" />
-          Zapnout push
-        </button>
+          <Facebook className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Facebook Bouřkář CZ</span>
+          <span className="sm:hidden">Facebook</span>
+        </a>
         <Link
           to="/admin"
           className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1.5 text-xs font-medium hover:bg-accent"
         >
           <Shield className="h-3.5 w-3.5" />
-          Admin
+          <span className="hidden sm:inline">Admin</span>
         </Link>
       </div>
     </header>
