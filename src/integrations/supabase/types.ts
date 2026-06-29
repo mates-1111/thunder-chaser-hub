@@ -24,7 +24,9 @@ export type Database = {
           lat: number | null
           level: number
           lng: number | null
+          name: string | null
           radius_km: number | null
+          starts_at: string
           type: string
         }
         Insert: {
@@ -36,7 +38,9 @@ export type Database = {
           lat?: number | null
           level: number
           lng?: number | null
+          name?: string | null
           radius_km?: number | null
+          starts_at?: string
           type: string
         }
         Update: {
@@ -48,7 +52,9 @@ export type Database = {
           lat?: number | null
           level?: number
           lng?: number | null
+          name?: string | null
           radius_km?: number | null
+          starts_at?: string
           type?: string
         }
         Relationships: []
