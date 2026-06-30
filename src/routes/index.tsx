@@ -10,18 +10,35 @@ import { NearestStormCard } from "@/components/NearestStormCard";
 import { useAlerts } from "@/hooks/useAlerts";
 import { fetchRadar, type RadarData } from "@/lib/radar";
 
+const OG_IMAGE =
+  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/012fa587-d378-4769-a378-5122aa072c09/id-preview-4de7d202--f76a542d-a0dc-47c7-88b8-40699a2ad3f0.lovable.app-1782641686620.png";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Bouřkář CZ — radar bouřek, předpovědi a hlášení pro Česko" },
+      { title: "Bouřkář CZ — Živý radar bouřek a předpověď pro Česko" },
       {
         name: "description",
         content:
-          "Živý radar bouřek a srážek nad Českem, krátkodobá a dlouhodobá varování s mapou nebezpečí.",
+          "Živý radar bouřek a srážek nad Českem, krátkodobá a dlouhodobá varování s mapou nebezpečí a push upozorněními.",
       },
-      { property: "og:title", content: "Bouřkář CZ" },
-      { property: "og:description", content: "Radar a výstrahy bouřek pro Česko." },
+      { property: "og:title", content: "Bouřkář CZ — Živý radar a předpověď bouřek" },
+      {
+        property: "og:description",
+        content:
+          "Sledujte radar bouřek a blesky v reálném čase nad Českem a získejte upozornění na bouřky, které se blíží k vaší poloze.",
+      },
+      { property: "og:url", content: "https://thunder-chaser-hub.lovable.app/" },
+      { property: "og:image", content: OG_IMAGE },
+      { name: "twitter:image", content: OG_IMAGE },
+      { name: "twitter:title", content: "Bouřkář CZ — Živý radar a předpověď bouřek" },
+      {
+        name: "twitter:description",
+        content:
+          "Sledujte radar bouřek a blesky v reálném čase nad Českem a získejte upozornění na bouřky, které se blíží k vaší poloze.",
+      },
     ],
+    links: [{ rel: "canonical", href: "https://thunder-chaser-hub.lovable.app/" }],
   }),
   component: HomePage,
 });
