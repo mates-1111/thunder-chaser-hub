@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChmiRadarConfigRouteImport } from './routes/api/chmi/radar-config'
 import { Route as ApiChmiLayerRouteImport } from './routes/api/chmi/layer'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -38,12 +44,14 @@ const ApiChmiLayerRoute = ApiChmiLayerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chmi/layer': typeof ApiChmiLayerRoute
   '/api/chmi/radar-config': typeof ApiChmiRadarConfigRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chmi/layer': typeof ApiChmiLayerRoute
   '/api/chmi/radar-config': typeof ApiChmiRadarConfigRoute
 }
@@ -51,26 +59,51 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chmi/layer': typeof ApiChmiLayerRoute
   '/api/chmi/radar-config': typeof ApiChmiRadarConfigRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/api/chmi/layer' | '/api/chmi/radar-config'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/sitemap.xml'
+    | '/api/chmi/layer'
+    | '/api/chmi/radar-config'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/api/chmi/layer' | '/api/chmi/radar-config'
-  id: '__root__' | '/' | '/admin' | '/api/chmi/layer' | '/api/chmi/radar-config'
+  to:
+    | '/'
+    | '/admin'
+    | '/sitemap.xml'
+    | '/api/chmi/layer'
+    | '/api/chmi/radar-config'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/sitemap.xml'
+    | '/api/chmi/layer'
+    | '/api/chmi/radar-config'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChmiLayerRoute: typeof ApiChmiLayerRoute
   ApiChmiRadarConfigRoute: typeof ApiChmiRadarConfigRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -105,6 +138,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChmiLayerRoute: ApiChmiLayerRoute,
   ApiChmiRadarConfigRoute: ApiChmiRadarConfigRoute,
 }
