@@ -1,0 +1,9 @@
+# Bouřkář CZ
+
+> Živý radar bouřek a srážek nad Českem s krátkodobými i dlouhodobými výstrahami a push upozorněním na blížící se bouřky.
+
+Bouřkář CZ zobrazuje vysokorozlišovací radarová data ČHMÚ (srážky a blesky) v reálném čase a umožňuje uživatelům zapnout upozornění na bouřky v okolí jejich polohy.
+
+## Pages
+
+- [Domů – živý radar bouřek](/): Interaktivní radarová mapa Česka, aktivní výstrahy a karta nejbližší bouřky.
