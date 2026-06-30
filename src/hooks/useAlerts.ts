@@ -30,8 +30,8 @@ export function useAlerts() {
     }
     load();
 
-    const channel = supabase
-      .channel("alerts-stream")
+    const channel = supabase.channel("alerts-stream");
+    channel
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "alerts" },
