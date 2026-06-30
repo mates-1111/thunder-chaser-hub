@@ -28,6 +28,13 @@ import { Slider } from "@/components/ui/slider";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Admin — Bouřkář CZ" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+    links: [{ rel: "canonical", href: "https://thunder-chaser-hub.lovable.app/admin" }],
+  }),
   component: AdminPage,
 });
 
