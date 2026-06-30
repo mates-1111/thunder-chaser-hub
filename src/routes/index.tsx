@@ -76,6 +76,7 @@ function HomePage() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden" style={{ background: "oklch(0.96 0.004 240)" }}>
+      <h1 className="sr-only">Bouřkář CZ — živý radar bouřek a srážek v Česku</h1>
       <StormMap currentFrame={currentFrame} bounds={radar?.bounds ?? null} alerts={alerts} />
 
       <Header />
