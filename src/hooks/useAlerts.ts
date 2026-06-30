@@ -30,7 +30,7 @@ export function useAlerts() {
     }
     load();
 
-    const channel = supabase.channel("alerts-stream");
+    const channel = supabase.channel(`alerts-stream-${Math.random().toString(36).slice(2)}`);
     channel
       .on(
         "postgres_changes",
