@@ -400,6 +400,20 @@ function AlertEditor({ initial, onClose }: { initial: FormState; onClose: () => 
             <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} required />
           </div>
 
+          <div className="space-y-2 sm:col-span-2">
+            <Label>
+              Cílové město pro push {form.type === "short" ? "(povinné pro pípnutí konkrétnímu městu)" : "(nepovinné – dlouhodobá výstraha se pošle všem)"}
+            </Label>
+            <Input
+              value={form.city}
+              onChange={(e) => setForm({ ...form, city: e.target.value })}
+              placeholder={form.type === "short" ? "např. Praha" : "prázdné = pošle se všem odběratelům"}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Krátkodobá výstraha pošle push notifikaci jen odběratelům, kteří si zadali toto město (bez ohledu na velikost písmen).
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label>Začátek</Label>
             <Input type="datetime-local" value={form.starts_at} onChange={(e) => setForm({ ...form, starts_at: e.target.value })} />
