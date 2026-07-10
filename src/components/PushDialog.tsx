@@ -4,14 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-
-const STORAGE_KEY = "bourkar.pushCity";
-
-export function getStoredCity(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(STORAGE_KEY);
-}
+import { enablePushForCity, getStoredCity, markPushDismissed, pushSupported } from "@/lib/push";
+import { Bell } from "lucide-react";
 
 export function PushDialog({
   open,
@@ -32,59 +26,67 @@ export function PushDialog({
       toast.error("Zadej město.");
       return;
     }
+    if (!pushSupported()) {
+      toast.error("Tvůj prohlížeč nepodporuje push notifikace. Na iPhone: přidej aplikaci na plochu (Sdílet → Na plochu) a otevři odtud.");
+      return;
+    }
     setBusy(true);
     try {
-      // Request notification permission
-      if (!("Notification" in window)) {
-        toast.error("Tvůj prohlížeč nepodporuje notifikace.");
-        return;
-      }
-      let perm = Notification.permission;
-      if (perm === "default") perm = await Notification.requestPermission();
-      if (perm !== "granted") {
-        toast.error("Notifikace nebyly povolené.");
-        return;
-      }
-
-      localStorage.setItem(STORAGE_KEY, trimmed);
-      await supabase.from("subscribers").insert({ city: trimmed });
-
-      toast.success(`Notifikace zapnuty pro ${trimmed}.`);
+      await enablePushForCity(trimmed);
+      toast.success(`Notifikace zapnuty pro ${trimmed}. Pošleme ti pípnutí, když vydáme výstrahu.`);
       onSubscribed?.(trimmed);
       onOpenChange(false);
     } catch (err) {
       console.error(err);
-      toast.error("Nepodařilo se zapnout notifikace.");
+      toast.error(err instanceof Error ? err.message : "Nepodařilo se zapnout notifikace.");
     } finally {
       setBusy(false);
     }
   }
 
+  function handleDismiss(v: boolean) {
+    if (!v) markPushDismissed();
+    onOpenChange(v);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDismiss}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Zapnout push notifikace</DialogTitle>
-          <DialogDescription>
-            Zadej svoje město. Když se k tobě bude blížit bouřka, pípneme ti.
+          <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-bolt text-bolt-foreground">
+            <Bell className="h-6 w-6" />
+          </div>
+          <DialogTitle className="text-center">Zapnout upozornění na bouřky</DialogTitle>
+          <DialogDescription className="text-center">
+            Zadej svoje město. Jakmile vydáme výstrahu pro tvůj region, pošleme ti push notifikaci přímo na mobil nebo počítač.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="push-city">Město</Label>
+            <Label htmlFor="push-city">Tvoje město</Label>
             <Input
               id="push-city"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="např. Brno"
+              placeholder="např. Praha, Brno, Ostrava…"
               autoFocus
               required
             />
           </div>
           <Button type="submit" disabled={busy} className="w-full">
-            {busy ? "Zapínám…" : "Zapnout notifikace"}
+            {busy ? "Zapínám…" : "🔔 Zapnout notifikace"}
           </Button>
+          <button
+            type="button"
+            onClick={() => handleDismiss(false)}
+            className="mx-auto block text-xs text-muted-foreground hover:underline"
+          >
+            Teď ne
+          </button>
         </form>
+        <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+          Poznámka pro iPhone/iPad: push funguje jen když si přidáš stránku na plochu (Sdílet → „Přidat na plochu") a otevřeš ji z ikony.
+        </p>
       </DialogContent>
     </Dialog>
   );
