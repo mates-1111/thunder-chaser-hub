@@ -166,6 +166,7 @@ export const updateAlert = createServerFn({ method: "POST" })
         level: data.level,
         name: data.name.trim().slice(0, 200),
         description: data.description.trim().slice(0, 2000),
+        city: data.city?.trim() || null,
         lat: data.type === "short" ? data.lat : null,
         lng: data.type === "short" ? data.lng : null,
         radius_km: data.type === "short" ? data.radius_km : null,
