@@ -61,19 +61,34 @@ export type Database = {
       }
       subscribers: {
         Row: {
+          auth: string | null
           city: string
           created_at: string
+          endpoint: string | null
           id: string
+          p256dh: string | null
+          updated_at: string
+          user_agent: string | null
         }
         Insert: {
+          auth?: string | null
           city: string
           created_at?: string
+          endpoint?: string | null
           id?: string
+          p256dh?: string | null
+          updated_at?: string
+          user_agent?: string | null
         }
         Update: {
+          auth?: string | null
           city?: string
           created_at?: string
+          endpoint?: string | null
           id?: string
+          p256dh?: string | null
+          updated_at?: string
+          user_agent?: string | null
         }
         Relationships: []
       }
