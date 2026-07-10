@@ -18,6 +18,7 @@ const OG_IMAGE =
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { name: "google-site-verification", content:<meta name="google-site-verification" content="KJ0tm8dd2hTQzV2gi9J76KZf24ppEcOjwJrNCnJp_JY" />},
       { title: "Bouřkář CZ — Živý radar bouřek a předpověď pro Česko" },
       {
         name: "description",
