@@ -59,6 +59,7 @@ type AlertInput = {
   level: number;
   name: string;
   description: string;
+  city?: string | null;
   lat?: number | null;
   lng?: number | null;
   radius_km?: number | null;
@@ -84,6 +85,7 @@ export const createAlert = createServerFn({ method: "POST" })
     await requireAdmin();
     validate(data);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const cityValue = data.city?.trim() || null;
     const { data: row, error } = await supabaseAdmin
       .from("alerts")
       .insert({
@@ -91,6 +93,7 @@ export const createAlert = createServerFn({ method: "POST" })
         level: data.level,
         name: data.name.trim().slice(0, 200),
         description: data.description.trim().slice(0, 2000),
+        city: cityValue,
         lat: data.type === "short" ? data.lat : null,
         lng: data.type === "short" ? data.lng : null,
         radius_km: data.type === "short" ? data.radius_km : null,
@@ -100,6 +103,53 @@ export const createAlert = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw new Error(error.message);
+
+    // Fire-and-forget push send (don't fail alert creation if push fails).
+    try {
+      const { buildPushPayload } = await import("@block65/webcrypto-web-push");
+      const publicKey = process.env.VAPID_PUBLIC_KEY;
+      const privateKey = process.env.VAPID_PRIVATE_KEY;
+      const subject = process.env.VAPID_SUBJECT ?? "mailto:admin@bourkar.cz";
+      if (publicKey && privateKey) {
+        let q = supabaseAdmin
+          .from("subscribers")
+          .select("endpoint,p256dh,auth,city")
+          .not("endpoint", "is", null);
+        if (row.type === "short" && cityValue) q = q.ilike("city", cityValue);
+        const { data: subs } = await q;
+        const title =
+          row.type === "short"
+            ? `⚡ Výstraha – ${row.name ?? "bouřka"} (úroveň ${row.level})`
+            : `⚠️ ${row.name ?? "Výstraha"} (úroveň ${row.level})`;
+        const message = {
+          data: { title, body: row.description.slice(0, 300), tag: `alert-${row.id}`, level: row.level, url: "/" },
+          options: { ttl: 60 * 60 * 6, urgency: "high" as const },
+        };
+        const dead: string[] = [];
+        await Promise.all(
+          (subs ?? []).map(async (s) => {
+            if (!s.endpoint || !s.p256dh || !s.auth) return;
+            const sub = { endpoint: s.endpoint, expirationTime: null, keys: { auth: s.auth, p256dh: s.p256dh } };
+            try {
+              const payload = await buildPushPayload(message, sub, { subject, publicKey, privateKey });
+              const resp = await fetch(sub.endpoint, {
+                method: payload.method,
+                headers: payload.headers,
+                body: payload.body as BodyInit,
+              });
+              if (resp.status === 404 || resp.status === 410) dead.push(s.endpoint);
+            } catch (e) {
+              console.warn("[push] send error", e);
+            }
+          }),
+        );
+        if (dead.length) await supabaseAdmin.from("subscribers").delete().in("endpoint", dead);
+        console.log(`[push] alert ${row.id}: dispatched to ${subs?.length ?? 0} subscribers`);
+      }
+    } catch (e) {
+      console.error("[push] dispatch failed", e);
+    }
+
     return row;
   });
 
@@ -116,6 +166,7 @@ export const updateAlert = createServerFn({ method: "POST" })
         level: data.level,
         name: data.name.trim().slice(0, 200),
         description: data.description.trim().slice(0, 2000),
+        city: data.city?.trim() || null,
         lat: data.type === "short" ? data.lat : null,
         lng: data.type === "short" ? data.lng : null,
         radius_km: data.type === "short" ? data.radius_km : null,

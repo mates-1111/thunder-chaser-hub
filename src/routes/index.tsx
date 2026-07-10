@@ -7,8 +7,10 @@ import { StormMap } from "@/components/StormMap";
 import { RadarTimeline } from "@/components/RadarTimeline";
 import { LocalWeatherDialog } from "@/components/LocalWeatherDialog";
 import { NearestStormCard } from "@/components/NearestStormCard";
+import { PushDialog } from "@/components/PushDialog";
 import { useAlerts } from "@/hooks/useAlerts";
 import { fetchRadar, type RadarData } from "@/lib/radar";
+import { shouldPromptForPush } from "@/lib/push";
 
 const OG_IMAGE =
   "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/012fa587-d378-4769-a378-5122aa072c09/id-preview-4de7d202--f76a542d-a0dc-47c7-88b8-40699a2ad3f0.lovable.app-1782641686620.png";
@@ -47,6 +49,7 @@ function HomePage() {
   const [radar, setRadar] = useState<RadarData | null>(null);
   const [idx, setIdx] = useState(0);
   const [weatherOpen, setWeatherOpen] = useState(false);
+  const [pushOpen, setPushOpen] = useState(false);
   const alerts = useAlerts();
 
   useEffect(() => {
@@ -65,9 +68,15 @@ function HomePage() {
         .catch(() => {});
     }, 5 * 60 * 1000);
 
+    // Auto-open push dialog after 2s on first visit
+    const promptId = setTimeout(() => {
+      if (!cancelled && shouldPromptForPush()) setPushOpen(true);
+    }, 2000);
+
     return () => {
       cancelled = true;
       clearInterval(id);
+      clearTimeout(promptId);
     };
   }, []);
 
@@ -79,7 +88,7 @@ function HomePage() {
       <h1 className="sr-only">Bouřkář CZ — živý radar bouřek a srážek v Česku</h1>
       <StormMap currentFrame={currentFrame} bounds={radar?.bounds ?? null} alerts={alerts} />
 
-      <Header />
+      <Header onEnablePush={() => setPushOpen(true)} />
       <Sidebar />
 
       <div className="pointer-events-auto absolute top-16 left-3 z-[1000]">
@@ -96,6 +105,8 @@ function HomePage() {
       <NearestStormCard alerts={alerts} />
 
       <LocalWeatherDialog open={weatherOpen} onOpenChange={setWeatherOpen} />
+      <PushDialog open={pushOpen} onOpenChange={setPushOpen} />
+
 
       {radar && (
         <RadarTimeline
