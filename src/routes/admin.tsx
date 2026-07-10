@@ -119,6 +119,7 @@ type FormState = {
   level: number;
   name: string;
   description: string;
+  city: string;
   lat: number;
   lng: number;
   radius_km: number;
@@ -131,6 +132,7 @@ const DEFAULT_FORM: FormState = {
   level: 2,
   name: "",
   description: "",
+  city: "",
   lat: 49.8,
   lng: 15.5,
   radius_km: 30,
@@ -198,6 +200,7 @@ function toForm(a: Alert): FormState {
     level: a.level,
     name: a.name ?? "",
     description: a.description,
+    city: a.city ?? "",
     lat: a.lat ?? 49.8,
     lng: a.lng ?? 15.5,
     radius_km: a.radius_km ?? 30,
@@ -328,6 +331,7 @@ function AlertEditor({ initial, onClose }: { initial: FormState; onClose: () => 
         level: form.level,
         name: form.name,
         description: form.description,
+        city: form.city || null,
         lat: form.type === "short" ? form.lat : null,
         lng: form.type === "short" ? form.lng : null,
         radius_km: form.type === "short" ? form.radius_km : null,
