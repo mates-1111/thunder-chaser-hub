@@ -87,7 +87,7 @@ export const sendAlertPush = createServerFn({ method: "POST" })
           const resp = await fetch(subscription.endpoint, {
             method: payload.method,
             headers: payload.headers,
-            body: payload.body,
+            body: payload.body as BodyInit,
           });
           if (resp.status === 404 || resp.status === 410) {
             deadEndpoints.push(s.endpoint);
