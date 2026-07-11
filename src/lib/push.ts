@@ -1,5 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
 import { VAPID_PUBLIC_KEY, urlBase64ToUint8Array } from "./push-config";
+import { upsertSubscription } from "./subscribe.functions";
 
 export const PUSH_CITY_KEY = "bourkar.pushCity";
 export const PUSH_DISMISSED_KEY = "bourkar.pushDismissed";
