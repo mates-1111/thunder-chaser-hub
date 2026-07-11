@@ -85,6 +85,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Živý radar bouřek a srážek nad Českem. Krátkodobé i dlouhodobé výstrahy a push upozornění na blížící se bouřky podle vaší polohy.",
       },
       { name: "author", content: "Bouřkář CZ" },
+      {
+        name: "google-site-verification",
+        content: "PTt9OuCSxCK0CdYr6pxSS_E4mbXupEgf1sOf27FP8z0",
+      },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Bouřkář CZ" },
       { name: "twitter:card", content: "summary_large_image" },
