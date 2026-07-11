@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
         content:
           "Sledujte radar bouřek a blesky v reálném čase nad Českem a získejte upozornění na bouřky, které se blíží k vaší poloze.",
       },
-      { property: "og:url", content: "https://thunder-chaser-hub.lovable.app/" },
+      { property: "og:url", content: "https://bourkar-cz.lovable.app/" },
       { property: "og:image", content: OG_IMAGE },
       { name: "twitter:image", content: OG_IMAGE },
       { name: "twitter:title", content: "Bouřkář CZ — Živý radar a předpověď bouřek" },
