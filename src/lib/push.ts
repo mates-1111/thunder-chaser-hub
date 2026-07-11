@@ -49,20 +49,7 @@ export async function enablePushForCity(city: string): Promise<void> {
   const { endpoint, p256dh, auth } = subToJson(sub);
   const ua = typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null;
 
-  // Upsert by endpoint. Try update first; if 0 rows, insert.
-  const { data: updated, error: upErr } = await supabase
-    .from("subscribers")
-    .update({ city, p256dh, auth, user_agent: ua, updated_at: new Date().toISOString() })
-    .eq("endpoint", endpoint)
-    .select("id");
-
-  if (upErr) throw upErr;
-  if (!updated || updated.length === 0) {
-    const { error: insErr } = await supabase
-      .from("subscribers")
-      .insert({ city, endpoint, p256dh, auth, user_agent: ua });
-    if (insErr && !String(insErr.message).includes("duplicate")) throw insErr;
-  }
+  await upsertSubscription({ data: { city, endpoint, p256dh, auth, user_agent: ua } });
 
   localStorage.setItem(PUSH_CITY_KEY, city);
 }
