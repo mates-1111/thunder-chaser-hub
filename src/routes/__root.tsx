@@ -87,7 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Bouřkář CZ" },
       {
         name: "google-site-verification",
-        content: "PTt9OuCSxCK0CdYr6pxSS_E4mbXupEgf1sOf27FP8z0",
+        content: "KJ0tm8dd2hTQzV2gi9J76KZf24ppEcOjwJrNCnJp_JY",
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Bouřkář CZ" },
