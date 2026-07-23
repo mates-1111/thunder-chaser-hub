@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "bourkar-cz-mcp",
+      "version": "0.1.0",
+      "title": "Bouřkář CZ MCP"
+    },
+    "tools": [
+      {
+        "name": "list_active_alerts",
+        "title": "List active storm alerts",
+        "description": "Return currently active weather/storm alerts published on Bouřkář CZ (level 1–5, description, target city, optional geographic radius). Public data — same info shown on the website.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "type": {
+              "description": "Filter by alert type. 'long' = long-range forecast, 'short' = short-range storm. Defaults to all.",
+              "type": "string",
+              "enum": [
+                "all",
+                "long",
+                "short"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_radar_frames",
+        "title": "Get radar frames",
+        "description": "Return the current ČHMÚ radar frame timeline for Czechia (past measurements and short-term nowcast). Public data — the same frames shown on the Bouřkář CZ map.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "include": {
+              "description": "Which frames to return. Defaults to all.",
+              "type": "string",
+              "enum": [
+                "all",
+                "past",
+                "nowcast"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
