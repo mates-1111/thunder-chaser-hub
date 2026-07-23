@@ -25,7 +25,7 @@ export default defineTool({
             : data;
       return {
         content: [{ type: "text", text: JSON.stringify(payload) }],
-        structuredContent: payload,
+        structuredContent: { data: payload } as Record<string, unknown>,
       };
     } catch (err) {
       return {
