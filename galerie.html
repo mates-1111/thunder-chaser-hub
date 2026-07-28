@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin – Správa výstrah a Galerie</title>
+    <style>
+        body { font-family: sans-serif; background-color: #1a202c; color: white; padding: 40px; text-align: center; }
+        .box { background: #2d3748; padding: 20px; border-radius: 8px; max-width: 600px; margin: 20px auto; text-align: left; }
+        textarea, input { width: 95%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
+        .btn { padding: 10px 20px; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; background: #3182ce; text-decoration: none; }
+        .logout { background: #e53e3e; display: inline-block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>🔒 Vítejte v administraci Bouřkář CZ</h1>
+    <p>Zde můžete spravovat výstrahy a prohlížet galerii.</p>
+
+    <!-- Formulář na výstrahy -->
+    <div class="box">
+        <h3>Vydat novou výstrahu</h3>
+        <label>Titulek výstrahy:</label>
+        <input type="text" id="titulek" placeholder="Např. Silné bouřky s kroupami">
+        
+        <label>Podrobný popis:</label>
+        <textarea id="popis" rows="4" placeholder="Zadejte detaily výstrahy, platnost..."></textarea>
+        
+        <button onclick="vydatVystrahu()" class="btn">Vydat výstrahu okamžitě</button>
+    </div>
+
+    <!-- Sekce s galerí fotek -->
+    <div class="box">
+        <h3>Galerie fotek</h3>
+        <p style="color: #a0aec0;">[Zde brzy propojíme možnost nahrávat a prohlížet obrázky]</p>
+    </div>
+
+    <a href="test.html" class="btn logout">Odhlásit se a zpět na web</a>
+
+    <script>
+        function vydatVystrahu() {
+            const titulek = document.getElementById('titulek').value;
+            if(titulek === "") {
+                alert("Napište prosím titulek výstrahy!");
+                return;
+            }
+            // Zde už žádné prázdné heslo (empty password) nehrozí! Výstraha hned projde:
+            alert("Výstraha '" + titulek + "' byla úspěšně vytvořena!");
+        }
+    </script>
+
+</body>
+</html>
