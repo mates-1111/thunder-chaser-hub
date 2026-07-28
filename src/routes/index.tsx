@@ -1,121 +1,58 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { MapPin } from "lucide-react";
-import { Header } from "@/components/Header";
-import { Sidebar } from "@/components/Sidebar";
-import { StormMap } from "@/components/StormMap";
-import { RadarTimeline } from "@/components/RadarTimeline";
-import { LocalWeatherDialog } from "@/components/LocalWeatherDialog";
-import { NearestStormCard } from "@/components/NearestStormCard";
-import { PushDialog } from "@/components/PushDialog";
-import { useAlerts } from "@/hooks/useAlerts";
-import { fetchRadar, type RadarData } from "@/lib/radar";
-import { shouldPromptForPush } from "@/lib/push";
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouřkář CZ — Živý radar</title>
+    <style>
+        body { font-family: sans-serif; background-color: #1a202c; color: white; text-align: center; margin: 0; padding: 20px; }
+        header { background-color: #2d3748; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; font-size: 24px; }
+        .btn { display: inline-block; padding: 10px 20px; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; border: none; cursor: pointer; }
+        .btn-fb { background-color: #1877F2; }
+        .btn-admin { background-color: #4a5568; }
+        .radar-box { background: #2d3748; padding: 20px; border-radius: 8px; margin: 20px auto; max-width: 950px; }
+        iframe { width: 100%; height: 650px; border: none; border-radius: 8px; background: white; }
+        input { padding: 10px; border-radius: 5px; border: none; margin-right: 10px; }
+    </style>
+</head>
+<body>
 
-const OG_IMAGE =
-  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/012fa587-d378-4769-a378-5122aa072c09/id-preview-4de7d202--f76a542d-a0dc-47c7-88b8-40699a2ad3f0.lovable.app-1782641686620.png";
+    <header>
+        <div>
+            <h1>⚡ Bouřkář CZ</h1>
+            <span style="font-size: 12px; color: #a0aec0;">Radar ČHMÚ · blesky · předpovědi pro Česko</span>
+        </div>
+        <div>
+            <a href="https://facebook.com" target="_blank" class="btn btn-fb">Facebook Bouřkář CZ</a>
+            <a href="#admin-sekce" class="btn btn-admin">Admin přihlášení</a>
+        </div>
+    </header>
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Bouřkář CZ — Živý radar bouřek a předpověď pro Česko" },
-      {
-        name: "description",
-        content:
-          "Živý radar bouřek a srážek nad Českem, krátkodobá a dlouhodobá varování s mapou nebezpečí a push upozorněními.",
-      },
-      { property: "og:title", content: "Bouřkář CZ — Živý radar a předpověď bouřek" },
-      {
-        property: "og:description",
-        content:
-          "Sledujte radar bouřek a blesky v reálném čase nad Českem a získejte upozornění na bouřky, které se blíží k vaší poloze.",
-      },
-      { property: "og:url", content: "https://bourkar-cz.lovable.app/" },
-      { property: "og:image", content: OG_IMAGE },
-      { name: "twitter:image", content: OG_IMAGE },
-      { name: "twitter:title", content: "Bouřkář CZ — Živý radar a předpověď bouřek" },
-      {
-        name: "twitter:description",
-        content:
-          "Sledujte radar bouřek a blesky v reálném čase nad Českem a získejte upozornění na bouřky, které se blíží k vaší poloze.",
-      },
-    ],
-    links: [{ rel: "canonical", href: "https://thunder-chaser-hub.lovable.app/" }],
-  }),
-  component: HomePage,
-});
+    <div class="radar-box">
+        <h2>Živý radar srážek a bouřek ČHMÚ</h2>
+        <iframe src="https://chmi.cz"></iframe>
+    </div>
 
-function HomePage() {
-  const [radar, setRadar] = useState<RadarData | null>(null);
-  const [idx, setIdx] = useState(0);
-  const [weatherOpen, setWeatherOpen] = useState(false);
-  const [pushOpen, setPushOpen] = useState(false);
-  const alerts = useAlerts();
+    <div id="admin-sekce" style="margin-top: 50px; background: #2d3748; padding: 30px; border-radius: 8px; display: inline-block;">
+        <h3>Administrace webu</h3>
+        <p style="font-size: 14px; color: #a0aec0;">Zadejte heslo pro správu výstrah a galerie</p>
+        <input type="password" id="heslo-pole" placeholder="Zadejte heslo admina">
+        <button onclick="overitAdmina()" class="btn btn-admin" style="background-color: #3182ce;">Vstoupit</button>
+    </div>
 
-  useEffect(() => {
-    let cancelled = false;
-    fetchRadar()
-      .then((d) => {
-        if (cancelled) return;
-        setRadar(d);
-        setIdx(Math.max(0, d.past.length - 1));
-      })
-      .catch((err) => console.error("Radar fetch failed", err));
+    <script>
+        function overitAdmina() {
+            const zadaneHeslo = document.getElementById('heslo-pole').value;
+            if (zadaneHeslo === "kujal880") {
+                alert("Správné heslo! Vítejte.");
+                // Přesměrujeme na administrativní rozhraní
+                window.location.href = "/galerie.html";
+            } else {
+                alert("Chybné heslo! Přístup odepřen.");
+            }
+        }
+    </script>
 
-    const id = setInterval(() => {
-      fetchRadar()
-        .then((d) => !cancelled && setRadar(d))
-        .catch(() => {});
-    }, 5 * 60 * 1000);
-
-    // Auto-open push dialog after 2s on first visit
-    const promptId = setTimeout(() => {
-      if (!cancelled && shouldPromptForPush()) setPushOpen(true);
-    }, 2000);
-
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-      clearTimeout(promptId);
-    };
-  }, []);
-
-  const frames = radar ? [...radar.past, ...radar.nowcast] : [];
-  const currentFrame = frames[idx] ?? null;
-
-  return (
-    <main className="relative h-screen w-screen overflow-hidden" style={{ background: "oklch(0.96 0.004 240)" }}>
-      <h1 className="sr-only">Bouřkář CZ — živý radar bouřek a srážek v Česku</h1>
-      <StormMap currentFrame={currentFrame} bounds={radar?.bounds ?? null} alerts={alerts} />
-
-      <Header onEnablePush={() => setPushOpen(true)} />
-      <Sidebar />
-
-      <div className="pointer-events-auto absolute top-16 left-3 z-[1000]">
-        <button
-          type="button"
-          onClick={() => setWeatherOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full bg-bolt px-4 py-1.5 text-xs font-semibold text-bolt-foreground shadow-2xl transition hover:brightness-95"
-        >
-          <MapPin className="h-3.5 w-3.5" />
-          Počasí u vás
-        </button>
-      </div>
-
-      <NearestStormCard alerts={alerts} />
-
-      <LocalWeatherDialog open={weatherOpen} onOpenChange={setWeatherOpen} />
-      <PushDialog open={pushOpen} onOpenChange={setPushOpen} />
-
-
-      {radar && (
-        <RadarTimeline
-          past={radar.past}
-          nowcast={radar.nowcast}
-          currentIndex={idx}
-          onIndexChange={setIdx}
-        />
-      )}
-    </main>
-  );
-}
+</body>
+</html>
