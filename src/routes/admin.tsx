@@ -78,8 +78,6 @@ function LoginForm({ onOk }: { onOk: () => void }) {
       setBusy(false);
     }
     }
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <form onSubmit={handle} className="w-full max-w-sm space-y-4 rounded-xl border bg-card p-6 shadow">
