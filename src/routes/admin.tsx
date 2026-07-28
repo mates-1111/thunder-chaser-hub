@@ -74,10 +74,12 @@ function LoginForm({ onOk }: { onOk: () => void }) {
       } else {
         toast.error("Špatné heslo");
       }
+    } catch (err) {
+      toast.error("Nastala chyba při přihlášení");
     } finally {
       setBusy(false);
     }
-    }
+  }
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <form onSubmit={handle} className="w-full max-w-sm space-y-4 rounded-xl border bg-card p-6 shadow">
