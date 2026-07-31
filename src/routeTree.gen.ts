@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiChmiRadarConfigRouteImport } from './routes/api/chmi/radar-config'
@@ -32,11 +31,6 @@ const McpRoute = McpRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -69,7 +63,6 @@ const Char91DotmcpChar93InvokeToolToolRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -80,7 +73,6 @@ export interface FileRoutesByFullPath {
   '/api/chmi/radar-config': typeof ApiChmiRadarConfigRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -92,7 +84,6 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -105,7 +96,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/admin'
     | '/mcp'
     | '/sitemap.xml'
@@ -116,7 +106,6 @@ export interface FileRouteTypes {
     | '/api/chmi/radar-config'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/admin'
     | '/mcp'
     | '/sitemap.xml'
@@ -127,7 +116,6 @@ export interface FileRouteTypes {
     | '/api/chmi/radar-config'
   id:
     | '__root__'
-    | '/'
     | '/admin'
     | '/mcp'
     | '/sitemap.xml'
@@ -139,7 +127,6 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -171,13 +158,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -219,7 +199,6 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   McpRoute: McpRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
