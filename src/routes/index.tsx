@@ -1,71 +1,121 @@
-import React, { useState, useEffect } from 'react';
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { MapPin } from "lucide-react";
+import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/Sidebar";
+import { StormMap } from "@/components/StormMap";
+import { RadarTimeline } from "@/components/RadarTimeline";
+import { LocalWeatherDialog } from "@/components/LocalWeatherDialog";
+import { NearestStormCard } from "@/components/NearestStormCard";
+import { PushDialog } from "@/components/PushDialog";
+import { useAlerts } from "@/hooks/useAlerts";
+import { fetchRadar, type RadarData } from "@/lib/radar";
+import { shouldPromptForPush } from "@/lib/push";
 
-export default function RadarComponent() {
-  const [radarUrl, setRadarUrl] = useState<string>('');
-  const [formattedTime, setFormattedTime] = useState<string>('');
-  const [errorCount, setErrorCount] = useState<number>(0);
+const OG_IMAGE =
+  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/012fa587-d378-4769-a378-5122aa072c09/id-preview-4de7d202--f76a542d-a0dc-47c7-88b8-40699a2ad3f0.lovable.app-1782641686620.png";
+
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Bouřkář CZ — Živý radar bouřek a předpověď pro Česko" },
+      {
+        name: "description",
+        content:
+          "Živý radar bouřek a srážek nad Českem, krátkodobá a dlouhodobá varování s mapou nebezpečí a push upozorněními.",
+      },
+      { property: "og:title", content: "Bouřkář CZ — Živý radar a předpověď bouřek" },
+      {
+        property: "og:description",
+        content:
+          "Sledujte radar bouřek a blesky v reálném čase nad Českem a získejte upozornění na bouřky, které se blíží k vaší poloze.",
+      },
+      { property: "og:url", content: "https://bourkar-cz.lovable.app/" },
+      { property: "og:image", content: OG_IMAGE },
+      { name: "twitter:image", content: OG_IMAGE },
+      { name: "twitter:title", content: "Bouřkář CZ — Živý radar a předpověď bouřek" },
+      {
+        name: "twitter:description",
+        content:
+          "Sledujte radar bouřek a blesky v reálném čase nad Českem a získejte upozornění na bouřky, které se blíží k vaší poloze.",
+      },
+    ],
+    links: [{ rel: "canonical", href: "https://thunder-chaser-hub.lovable.app/" }],
+  }),
+  component: HomePage,
+});
+
+function HomePage() {
+  const [radar, setRadar] = useState<RadarData | null>(null);
+  const [idx, setIdx] = useState(0);
+  const [weatherOpen, setWeatherOpen] = useState(false);
+  const [pushOpen, setPushOpen] = useState(false);
+  const alerts = useAlerts();
 
   useEffect(() => {
-    const updateRadarImage = () => {
-      const now = new Date();
-      
-      // ČHMÚ funguje v UTC čase
-      // Odečítáme minuty podle počtu chyb (pokud aktuální čas nejede, zkusíme o 15 minut starší)
-      const minutesToSubtract = 15 + (errorCount * 15);
-      const radarTime = new Date(now.getTime() - minutesToSubtract * 60 * 1000);
-      
-      const utcYear = radarTime.getUTCFullYear();
-      const utcMonth = String(radarTime.getUTCMonth() + 1).padStart(2, '0');
-      const utcDay = String(radarTime.getUTCDate()).padStart(2, '0');
-      const utcHours = String(radarTime.getUTCHours()).padStart(2, '0');
-      
-      // Nový formát ČHMÚ používá intervaly po 15 minutách (00, 15, 30, 45)
-      const currentMinutes = radarTime.getUTCMinutes();
-      const radarMinutes = Math.floor(currentMinutes / 15) * 15;
-      const strMinutes = String(radarMinutes).padStart(2, '0');
-      
-      // Sestavení nového timestampu: YYYYMMDD.HHmm
-      const timeStamp = `${utcYear}${utcMonth}${utcDay}.${utcHours}${strMinutes}`;
-      
-      // NOVÁ A FUNKČNÍ STRUKTURA URL ADRESY ČHMÚ RADARU
-      const url = `https://chmi.cz{timeStamp}.0.png`;
-      
-      setRadarUrl(url);
-      setFormattedTime(`${utcHours}:${strMinutes} UTC`);
+    let cancelled = false;
+    fetchRadar()
+      .then((d) => {
+        if (cancelled) return;
+        setRadar(d);
+        setIdx(Math.max(0, d.past.length - 1));
+      })
+      .catch((err) => console.error("Radar fetch failed", err));
+
+    const id = setInterval(() => {
+      fetchRadar()
+        .then((d) => !cancelled && setRadar(d))
+        .catch(() => {});
+    }, 5 * 60 * 1000);
+
+    // Auto-open push dialog after 2s on first visit
+    const promptId = setTimeout(() => {
+      if (!cancelled && shouldPromptForPush()) setPushOpen(true);
+    }, 2000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      clearTimeout(promptId);
     };
+  }, []);
 
-    updateRadarImage();
-    const interval = setInterval(updateRadarImage, 60000); // Kontrola každou minutu
-
-    return () => clearInterval(interval);
-  }, [errorCount]);
-
-  const handleImageError = () => {
-    // Pokud obrázek neexistuje, zvýšíme errorCount, což posune čas o dalších 15 minut zpět
-    if (errorCount < 4) {
-      setErrorCount(prev => prev + 1);
-    }
-  };
+  const frames = radar ? [...radar.past, ...radar.nowcast] : [];
+  const currentFrame = frames[idx] ?? null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#131313', padding: '20px', borderRadius: '16px', color: '#fff', fontFamily: 'sans-serif' }}>
-      <h2 style={{ margin: '0 0 5px 0', fontSize: '22px', fontWeight: 'bold', color: '#00d2ff' }}>Živý radar Bouřkář CZ</h2>
-      <p style={{ margin: '0 0 20px 0', color: '#888', fontSize: '14px' }}>Čas snímku: {formattedTime} (Aktualizováno)</p>
-      
-      <div style={{ position: 'relative', width: '100%', maxWidth: '650px', border: '1px solid #222', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
-        {radarUrl ? (
-          <img 
-            src={radarUrl} 
-            alt="Srážkový radar" 
-            style={{ width: '100%', height: 'auto', display: 'block', filter: 'contrast(1.1)' }}
-            onError={handleImageError}
-          />
-        ) : (
-          <p style={{ padding: '60px', textAlign: 'center', color: '#666' }}>Načítám srážková data...</p>
-        )}
+    <main className="relative h-screen w-screen overflow-hidden" style={{ background: "oklch(0.96 0.004 240)" }}>
+      <h1 className="sr-only">Bouřkář CZ — živý radar bouřek a srážek v Česku</h1>
+      <StormMap currentFrame={currentFrame} bounds={radar?.bounds ?? null} alerts={alerts} />
+
+      <Header onEnablePush={() => setPushOpen(true)} />
+      <Sidebar />
+
+      <div className="pointer-events-auto absolute top-16 left-3 z-[1000]">
+        <button
+          type="button"
+          onClick={() => setWeatherOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full bg-bolt px-4 py-1.5 text-xs font-semibold text-bolt-foreground shadow-2xl transition hover:brightness-95"
+        >
+          <MapPin className="h-3.5 w-3.5" />
+          Počasí u vás
+        </button>
       </div>
-      <p style={{ fontSize: '11px', color: '#444', marginTop: '15px' }}>Data poskytuje © Český hydrometeorologický ústav</p>
-    </div>
+
+      <NearestStormCard alerts={alerts} />
+
+      <LocalWeatherDialog open={weatherOpen} onOpenChange={setWeatherOpen} />
+      <PushDialog open={pushOpen} onOpenChange={setPushOpen} />
+
+
+      {radar && (
+        <RadarTimeline
+          past={radar.past}
+          nowcast={radar.nowcast}
+          currentIndex={idx}
+          onIndexChange={setIdx}
+        />
+      )}
+    </main>
   );
 }
-
