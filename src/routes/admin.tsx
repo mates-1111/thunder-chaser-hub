@@ -33,7 +33,7 @@ export const Route = createFileRoute("/admin")({
       { title: "Admin — Bouřkář CZ" },
       { name: "robots", content: "noindex, nofollow" },
     ],
-    links: [{ rel: "canonical", href: "https://thunder-chaser-hub.lovable.app/admin" }],
+    links: [{ rel: "canonical", href: "https://bourkar-cz.lovable.app/admin" }],
   }),
   component: AdminPage,
 });
